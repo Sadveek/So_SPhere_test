@@ -1,0 +1,7 @@
+node_modules/
+functions/node_modules/
+.firebase/
+.firebase/**
+.env
+.DS_Store
+coverage/

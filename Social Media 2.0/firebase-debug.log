@@ -1,0 +1,15 @@
+[debug] [2026-03-09T07:03:32.371Z] ----------------------------------------------------------------------
+[debug] [2026-03-09T07:03:32.378Z] Command:       /opt/homebrew/Cellar/node/25.1.0_1/bin/node /opt/homebrew/bin/firebase login:list
+[debug] [2026-03-09T07:03:32.378Z] CLI Version:   15.9.0
+[debug] [2026-03-09T07:03:32.378Z] Platform:      darwin
+[debug] [2026-03-09T07:03:32.378Z] Node Version:  v25.1.0
+[debug] [2026-03-09T07:03:32.378Z] Time:          Mon Mar 09 2026 12:48:32 GMT+0545 (Nepal Time)
+[debug] [2026-03-09T07:03:32.378Z] ----------------------------------------------------------------------
+[debug] 
+[info] Logged in as sanskardhakal08@gmail.com
+[debug] [2026-03-09T07:03:37.551Z] Error: Timed out.
+    at Timeout._onTimeout (/opt/homebrew/lib/node_modules/firebase-tools/lib/utils.js:308:49)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+[error] 
+[error] Error: An unexpected error has occurred.

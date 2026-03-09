@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SocialSphere</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: "#0f766e",
+            accent: "#d97706",
+            ink: "#1f2937",
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="./src/css/styles.css" />
+</head>
+
+<body>
+  <div id="toast-container" class="fixed right-4 z-50 flex w-80 flex-col gap-2"></div>
+
+  <div class="shell-bg"></div>
+
+  <main class="relative z-10 min-h-screen">
+    <section id="auth-view" class="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-8">
+      <div class="glass-card w-full max-w-md p-8">
+        <div class="mb-6 text-center">
+          <div class="mt-2 flex items-center justify-center gap-3">
+            <button id="theme-sphere-auth" type="button" class="theme-sphere" aria-label="Spin globe to toggle theme">
+              <span class="theme-sphere__orb"></span>
+              <span class="theme-sphere__ring theme-sphere__ring--a"></span>
+              <span class="theme-sphere__ring theme-sphere__ring--b"></span>
+            </button>
+            <h1 class="text-4xl font-extrabold text-ink">SocialSphere</h1>
+          </div>
+          <p class="mt-3 text-sm text-slate-600">
+            Connect, build, and share your web dev journey.
+          </p>
+        </div>
+
+        <form id="auth-form" class="space-y-4" novalidate>
+          <div>
+            <label for="auth-email" class="mb-1 block text-sm font-medium text-slate-700">Email</label>
+            <input id="auth-email" name="email" type="email" autocomplete="email" required
+              class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+              placeholder="writeuremail.@gmail.com" />
+          </div>
+          <div>
+            <label for="auth-password" class="mb-1 block text-sm font-medium text-slate-700">Password</label>
+            <div class="relative">
+              <input id="auth-password" name="password" type="password" autocomplete="current-password" required
+                minlength="6"
+                class="w-full rounded-lg border border-slate-300 px-4 py-2 pr-12 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                placeholder="At least 6 characters" />
+              <button id="auth-password-toggle" type="button" class="absolute inset-y-0 right-2 my-auto inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-700" aria-label="Show password" title="Show password">
+                <svg id="auth-password-icon-show" viewBox="0 0 24 24" aria-hidden="true" class="h-5 w-5">
+                  <path fill="currentColor" d="M12 5c5.5 0 9.27 4.19 10.52 6.01a1.77 1.77 0 0 1 0 1.98C21.27 14.81 17.5 19 12 19s-9.27-4.19-10.52-6.01a1.77 1.77 0 0 1 0-1.98C2.73 9.19 6.5 5 12 5Zm0 2C7.78 7 4.63 10.17 3.46 12 4.63 13.83 7.78 17 12 17s7.37-3.17 8.54-5C19.37 10.17 16.22 7 12 7Zm0 2.5A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5Z"/>
+                </svg>
+                <svg id="auth-password-icon-hide" viewBox="0 0 24 24" aria-hidden="true" class="hidden h-5 w-5">
+                  <path fill="currentColor" d="m3.28 2 18 18-1.41 1.41-3.07-3.07A11.7 11.7 0 0 1 12 19c-5.5 0-9.27-4.19-10.52-6.01a1.77 1.77 0 0 1 0-1.98A16.4 16.4 0 0 1 6.2 6.26L1.87 1.93ZM12 7a6 6 0 0 1 6 6c0 .74-.14 1.45-.4 2.1l-1.56-1.56a3.5 3.5 0 0 0-4.58-4.58L9.9 7.4A5.96 5.96 0 0 1 12 7Zm8.54 5c-1.17-1.83-4.32-5-8.54-5-.56 0-1.1.06-1.63.17L8.74 5.54A11.96 11.96 0 0 1 12 5c5.5 0 9.27 4.19 10.52 6.01a1.77 1.77 0 0 1 0 1.98 16.5 16.5 0 0 1-2.59 2.89l-1.42-1.42A14.39 14.39 0 0 0 20.54 12Z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <button id="auth-submit" type="submit"
+            class="w-full rounded-lg bg-brand px-4 py-2.5 font-semibold text-white transition hover:bg-teal-700">
+            Log In
+          </button>
+        </form>
+
+        <button id="auth-toggle" class="mt-4 w-full text-sm font-medium text-brand hover:underline">
+          Need an account? Sign up
+        </button>
+      </div>
+    </section>
+
+    <section id="app-view" class="hidden min-h-screen">
+      <section id="onboarding-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/50 px-4">
+        <div class="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+          <h3 class="text-lg font-bold text-slate-900">Finish Your Profile</h3>
+          <p class="mt-1 text-sm text-slate-600">
+            Choose your display name and profile picture. Your handle is fixed.
+          </p>
+
+          <form id="onboarding-form" class="mt-4 space-y-4" novalidate>
+            <div class="grid gap-4 md:grid-cols-[1fr_180px]">
+              <div class="space-y-3">
+                <div>
+                  <label for="onboarding-display-name" class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-600">Username</label>
+                  <input id="onboarding-display-name" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+                </div>
+                <div>
+                  <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-600">Handle (Fixed)</p>
+                  <p id="onboarding-handle" class="truncate whitespace-nowrap rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800">@member</p>
+                </div>
+              </div>
+              <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-600">Preview</p>
+                <img id="onboarding-avatar-preview" src="" alt="Avatar preview" class="mt-2 h-28 w-28 rounded-full object-cover object-center" />
+              </div>
+            </div>
+
+            <div>
+              <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-600">Pick an Avatar</p>
+              <div id="onboarding-avatar-grid" class="grid grid-cols-6 gap-2"></div>
+              <p class="mt-2 text-xs text-slate-500">If you skip selection, a random avatar will be assigned when you click Continue.</p>
+            </div>
+
+            <button id="onboarding-done-btn" type="submit" class="w-full rounded-lg bg-brand px-4 py-2.5 font-semibold text-white hover:bg-teal-700">
+              Continue
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <header class="sticky top-0 z-40 border-b border-slate-200 bg-white app-header">
+        <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div id="top-nav-buttons" class="flex items-center gap-3">
+            <button id="nav-feed" class="nav-btn nav-btn--active" data-view="feed" aria-label="Feed">
+              <span class="nav-btn-content">
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="nav-btn-icon">
+                  <path fill="currentColor" d="M4 4h16v16H4zm2 2v12h12V6zm2 2h8v2H8zm0 4h8v2H8z"/>
+                </svg>
+                <span class="nav-btn-label">Feed</span>
+              </span>
+            </button>
+            <button id="nav-messages" class="nav-btn relative" data-view="messages" aria-label="Messages">
+              <span class="nav-btn-content">
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="nav-btn-icon">
+                  <path fill="currentColor" d="M4 4h16v12H7l-3 3zm2 2v8.17L6.17 14H18V6z"/>
+                </svg>
+                <span class="nav-btn-label">Messages</span>
+              </span>
+              <span id="nav-messages-dot" class="hidden absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-red-500"></span>
+            </button>
+            <button id="nav-users" class="nav-btn" data-view="users" aria-label="Users">
+              <span class="nav-btn-content">
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="nav-btn-icon">
+                  <path fill="currentColor" d="M16 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm-8 0a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm0 2c-2.67 0-8 1.34-8 4v1h10v-1c0-1.15.62-2.11 1.67-2.88A12.67 12.67 0 0 0 8 13zm8 0c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                <span class="nav-btn-label">Users</span>
+              </span>
+            </button>
+            <button id="nav-profile" class="nav-btn" data-view="profile" aria-label="Profile">
+              <span class="nav-btn-content">
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="nav-btn-icon">
+                  <path fill="currentColor" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.33 0-8 2.17-8 5v1h16v-1c0-2.83-3.67-5-8-5z"/>
+                </svg>
+                <span class="nav-btn-label">Profile</span>
+              </span>
+            </button>
+            <button id="nav-settings" class="nav-btn" data-view="settings" aria-label="Settings">
+              <span class="nav-btn-content">
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="nav-btn-icon">
+                  <path fill="currentColor" d="M19.14 12.94a7.48 7.48 0 0 0 .05-.94 7.48 7.48 0 0 0-.05-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.42 7.42 0 0 0-1.63-.94l-.36-2.54A.5.5 0 0 0 13.9 2h-3.8a.5.5 0 0 0-.49.42l-.36 2.54a7.42 7.42 0 0 0-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.48a.5.5 0 0 0 .12.64l2.03 1.58a7.48 7.48 0 0 0-.05.94 7.48 7.48 0 0 0 .05.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96c.5.39 1.05.71 1.63.94l.36 2.54a.5.5 0 0 0 .49.42h3.8a.5.5 0 0 0 .49-.42l.36-2.54c.58-.23 1.13-.55 1.63-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64zM12 15.5A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5z"/>
+                </svg>
+                <span class="nav-btn-label">Settings</span>
+              </span>
+            </button>
+            <div id="top-nav-notifications-slot"></div>
+          </div>
+
+          <h2 class="hidden text-lg font-bold text-ink sm:flex sm:items-center sm:gap-2">
+            <button id="theme-sphere-header" type="button" class="theme-sphere theme-sphere--sm" aria-label="Spin globe to toggle theme">
+              <span class="theme-sphere__orb"></span>
+              <span class="theme-sphere__ring theme-sphere__ring--a"></span>
+              <span class="theme-sphere__ring theme-sphere__ring--b"></span>
+            </button>
+            <span>SocialSphere</span>
+          </h2>
+
+          <div id="top-user-actions" class="flex items-center gap-3">
+            <div id="notifications-host" class="relative">
+              <button id="notifications-bell-btn" class="relative rounded-lg p-1 hover:bg-slate-100" aria-label="Notifications">
+                <svg id="current-user-bell" viewBox="0 0 24 24" class="h-5 w-5 text-slate-700" role="img">
+                  <path fill="currentColor"
+                    d="M12 2a5 5 0 0 0-5 5v2.1c0 .9-.3 1.8-.9 2.5L4.3 14c-.8 1-.1 2.5 1.2 2.5h13c1.3 0 2-1.5 1.2-2.5l-1.8-2.4a4 4 0 0 1-.9-2.5V7a5 5 0 0 0-5-5zm0 20a3 3 0 0 0 2.8-2H9.2A3 3 0 0 0 12 22z" />
+                </svg>
+                <span id="notifications-bell-dot" class="hidden absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-red-500"></span>
+              </button>
+              <section id="notifications-panel"
+                class="hidden absolute right-0 top-9 z-50 w-72 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
+                <div class="flex items-center justify-between gap-2">
+                  <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-600">Notifications</h4>
+                  <button id="notifications-clear-btn"
+                    class="rounded-md border border-slate-300 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100">
+                    Clear All
+                  </button>
+                </div>
+                <div id="notifications-list" class="mt-2 max-h-72 space-y-2 overflow-y-auto"></div>
+              </section>
+            </div>
+            <div id="current-user-chip-wrap" class="flex items-center gap-2">
+              <img id="current-user-avatar" src="" alt="Current user avatar"
+                class="h-9 w-9 rounded-full border border-slate-200 bg-white object-cover object-center" />
+              <span id="current-user-chip" class="max-w-[110px] truncate text-[11px] font-medium text-slate-500"></span>
+            </div>
+            <button id="logout-btn"
+              class="header-logout rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+              Logout
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div id="app-layout" class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[2.25fr_0.75fr] lg:px-8">
+        <div class="space-y-5">
+          <section id="feed-view" class="space-y-5">
+            <section class="glass-card p-4">
+              <div class="mb-2 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <button id="network-toggle-btn" type="button" class="feed-tool-icon" aria-label="Hide network panel" title="Hide network panel">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
+                      <path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm7.93 9h-3.02a15.8 15.8 0 0 0-1.48-5 8.03 8.03 0 0 1 4.5 5ZM12 4.04c.96 1.2 2.3 3.68 2.86 6.96H9.14C9.7 7.72 11.04 5.24 12 4.04ZM4.07 13h3.02a15.8 15.8 0 0 0 1.48 5 8.03 8.03 0 0 1-4.5-5Zm3.02-2H4.07a8.03 8.03 0 0 1 4.5-5 15.8 15.8 0 0 0-1.48 5ZM12 19.96c-.96-1.2-2.3-3.68-2.86-6.96h5.72C14.3 16.28 12.96 18.76 12 19.96Zm3.43-1.96a15.8 15.8 0 0 0 1.48-5h3.02a8.03 8.03 0 0 1-4.5 5Z"/>
+                    </svg>
+                  </button>
+                  <label for="post-input" class="block text-sm font-semibold text-slate-700">Create Post</label>
+                </div>
+              </div>
+              <div id="post-meta-fields" class="mb-2 hidden grid gap-2 sm:grid-cols-[160px_1fr]">
+                <div>
+                  <label for="post-type-select" class="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-slate-600">Tag Option</label>
+                  <select id="post-type-select" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700">
+                    <option value="none" selected>None</option>
+                    <option value="update">Update</option>
+                    <option value="resource">Resource</option>
+                    <option value="poll">Poll</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="post-media-input" class="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-slate-600">Image URL</label>
+                  <input id="post-media-input" type="url" maxlength="500" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    placeholder="Optional image URL" />
+                </div>
+              </div>
+              <div id="post-poll-fields" class="mb-2 hidden rounded-lg border border-slate-200 bg-slate-50 p-2">
+                <p class="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-600">Poll options</p>
+                <div id="post-poll-options" class="grid gap-2 sm:grid-cols-2">
+                  <input type="text" maxlength="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    data-poll-option="0"
+                    placeholder="Poll option 1" />
+                  <input type="text" maxlength="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    data-poll-option="1"
+                    placeholder="Poll option 2" />
+                </div>
+                <button id="post-poll-add-btn" type="button" class="mt-2 rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100">
+                  Add more
+                </button>
+              </div>
+              <textarea id="post-input" rows="4" maxlength="200" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                class="w-full rounded-lg border border-slate-300 p-3 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                placeholder="Share a quick update with your community"></textarea>
+              <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                <div id="post-progress-bar" class="h-full w-0 rounded-full bg-brand transition-all"></div>
+              </div>
+              <div class="mt-2 flex flex-wrap items-center justify-end gap-2">
+                <div class="flex items-center gap-2">
+                  <p id="post-char-count" class="text-xs font-semibold text-slate-500">0/200</p>
+                  <button id="create-post-btn"
+                    class="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700">
+                    Publish
+                  </button>
+                </div>
+              </div>
+
+              <div class="my-4 border-t border-slate-200"></div>
+              <div class="feed-toolbar mb-4 rounded-xl border border-slate-200 bg-white/80 p-2">
+                <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <div id="feed-scope-toggle" class="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white p-1">
+                    <button id="feed-scope-following" class="rounded-full px-3 py-1 text-xs font-semibold text-slate-700">Following</button>
+                    <button id="feed-scope-everyone" class="rounded-full px-3 py-1 text-xs font-semibold text-slate-700">Everyone</button>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button id="feed-search-toggle" type="button" class="feed-tool-icon" aria-label="Toggle search">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
+                        <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L19 20.49 20.49 19zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
+                      </svg>
+                    </button>
+                    <button id="feed-filter-toggle" type="button" class="feed-tool-icon" aria-label="Toggle sort filters">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
+                        <path fill="currentColor" d="M3 5h18v2H3zm4 6h10v2H7zm3 6h4v2h-4z"/>
+                      </svg>
+                    </button>
+                    <label class="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+                      <input id="feed-compact-toggle" type="checkbox" class="h-3.5 w-3.5 rounded border-slate-300" />
+                      Compact
+                    </label>
+                  </div>
+                </div>
+                <div class="grid gap-2 sm:grid-cols-[1fr_180px]">
+                <div id="feed-search-panel" class="hidden">
+                  <input id="feed-search-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    placeholder="Search posts by text, name, or handle" />
+                </div>
+                <div id="feed-filter-panel" class="hidden">
+                  <div class="grid gap-2 sm:grid-cols-2">
+                    <select id="feed-sort-select" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700">
+                      <option value="latest">Latest</option>
+                      <option value="popular">Most Liked</option>
+                      <option value="discussed">Most Discussed</option>
+                    </select>
+                    <select id="feed-tag-select" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700">
+                      <option value="all">All Tags</option>
+                    </select>
+                  </div>
+                </div>
+                </div>
+              </div>
+              <button id="feed-new-posts-pill" class="hidden mb-3 rounded-full border border-brand/40 bg-teal-50 px-3 py-1 text-xs font-semibold text-brand">
+                New posts available. Jump to top
+              </button>
+              <div id="feed-list" class="space-y-4"></div>
+              <button id="feed-load-more"
+                class="mt-4 w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+                Load More
+              </button>
+            </section>
+          </section>
+
+          <section id="messages-view" class="glass-card mx-auto hidden w-full max-w-7xl p-6">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-sm font-semibold text-slate-700">Messages</h3>
+              <div class="flex items-center gap-2">
+                <button id="messages-tab-inbox" class="rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white">
+                  Messages
+                </button>
+                <button id="messages-tab-requests"
+                  class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700">
+                  Message Requests
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-3 grid gap-3 lg:grid-cols-[320px_1fr]">
+              <div id="messages-list" class="space-y-2"></div>
+
+              <div id="messages-chat-panel" class="rounded-xl border border-slate-200 bg-white/80 p-3 shadow-sm">
+                <p id="messages-chat-empty" class="text-sm text-slate-500">Select a conversation to start chatting.</p>
+                <div id="messages-chat-content" class="hidden">
+                  <div class="mb-2 flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
+                    <div class="flex min-w-0 items-center gap-3">
+                      <img id="messages-chat-avatar" src="" alt="Conversation avatar"
+                        class="h-10 w-10 rounded-full border border-slate-200 bg-white object-cover object-center" />
+                      <div class="min-w-0">
+                      <p id="messages-chat-title" class="text-sm font-semibold text-slate-800"></p>
+                      <p id="messages-chat-handle" class="text-[11px] text-slate-500"></p>
+                      <p id="messages-chat-status" class="text-xs text-slate-500"></p>
+                      </div>
+                    </div>
+                    <div id="messages-request-actions" class="hidden items-center gap-2">
+                      <button id="messages-accept-request"
+                        class="rounded-lg bg-brand px-2 py-1 text-xs font-semibold text-white hover:bg-teal-700">Accept</button>
+                      <button id="messages-ignore-request"
+                        class="rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100">Ignore</button>
+                    </div>
+                  </div>
+                  <div id="messages-chat-thread" class="max-h-96 space-y-3 overflow-y-auto pr-1"></div>
+                  <form id="messages-form" class="mt-3 flex gap-2 border-t border-slate-200 pt-3">
+                    <input id="messages-input" type="text" maxlength="1000" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                      class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Write a message..." />
+                    <button id="messages-send-btn" type="submit"
+                      class="rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-amber-700">Send</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="users-view" class="glass-card p-4 hidden">
+            <section class="rounded-lg border border-slate-200 bg-white/70 p-3">
+              <h3 class="text-sm font-semibold text-slate-700">Users</h3>
+              <input id="user-search-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                placeholder="Search users by name or handle" />
+              <div class="mt-3 flex flex-wrap gap-2">
+                <button id="user-filter-everyone" type="button" class="user-chip border border-brand/40 bg-teal-50 text-brand">Everyone</button>
+                <button id="user-filter-followers" type="button" class="user-chip border border-slate-300 bg-white text-slate-700">Followers</button>
+                <button id="user-filter-following" type="button" class="user-chip border border-slate-300 bg-white text-slate-700">Following</button>
+                <button id="user-filter-requests" type="button" class="user-chip border border-slate-300 bg-white text-slate-700">Follow Requests</button>
+              </div>
+              <div id="users-search-results" class="mt-3 space-y-3"></div>
+            </section>
+
+          </section>
+
+          <section id="profile-view" class="glass-card p-4 hidden">
+            <div class="mb-3 flex items-center justify-between gap-2">
+              <h3 id="profile-title" class="text-sm font-semibold text-slate-700">My Profile</h3>
+            </div>
+
+            <div class="grid gap-5 lg:grid-cols-[minmax(0,2fr)_320px] lg:items-start">
+              <div>
+                <div id="profile-readonly" class="space-y-3">
+                  <section class="rounded-lg border border-slate-200 bg-white/70 p-3">
+                    <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+                      <p class="text-xs font-semibold uppercase tracking-wide text-slate-600">Profile Picture</p>
+                      <div class="flex flex-wrap justify-end gap-2">
+                        <button id="profile-edit-toggle"
+                          class="rounded-lg border border-brand/35 bg-white px-4 py-2 text-sm font-semibold text-brand hover:bg-teal-50">Edit Profile</button>
+                        <button id="profile-reset-view" class="hidden rounded-lg border border-brand/40 bg-teal-50 px-4 py-2 text-sm font-semibold text-brand hover:bg-teal-100">Back to me</button>
+                      </div>
+                    </div>
+                    <div class="flex flex-col gap-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 lg:flex-row lg:items-center">
+                      <div class="flex w-full min-w-0 flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:text-left lg:w-[45%] lg:gap-4">
+                        <img id="profile-view-avatar" src="" alt="Profile avatar" class="h-28 w-28 rounded-full border border-slate-200 bg-white object-contain object-center p-1.5 sm:h-32 sm:w-32 lg:h-40 lg:w-40" />
+                        <div class="min-w-0">
+                          <p id="profile-view-display-name" class="max-w-full break-words text-2xl font-semibold leading-tight text-slate-800 sm:text-3xl"></p>
+                          <p id="profile-view-handle" class="break-all text-sm text-slate-500 sm:text-base"></p>
+                          <p id="profile-view-privacy" class="text-sm font-medium text-slate-500"></p>
+                        </div>
+                      </div>
+                      <div class="grid w-full grid-cols-3 gap-3 sm:gap-6 lg:ml-auto lg:w-[55%] lg:pr-4">
+                        <div class="text-center">
+                          <p id="profile-post-count" class="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">0</p>
+                          <p class="text-sm font-medium text-slate-500 sm:text-base">posts</p>
+                        </div>
+                        <div class="text-center">
+                          <p id="profile-followers-count" class="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">0</p>
+                          <p class="text-sm font-medium text-slate-500 sm:text-base">followers</p>
+                        </div>
+                        <div class="text-center">
+                          <p id="profile-following-count" class="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">0</p>
+                          <p class="text-sm font-medium text-slate-500 sm:text-base">following</p>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <div>
+                    <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-600">Bio</p>
+                    <p id="profile-view-bio" class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 whitespace-pre-wrap"></p>
+                  </div>
+                  <div id="profile-peer-actions" class="hidden pt-1">
+                    <div class="flex flex-wrap gap-3">
+                      <button id="profile-message-action"
+                        class="rounded-xl border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100">Message</button>
+                      <button id="profile-follow-action"
+                        class="rounded-xl border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100"></button>
+                    </div>
+                  </div>
+                </div>
+
+                <form id="profile-form" class="space-y-3 hidden" novalidate>
+                  <div>
+                    <label for="profile-display-name" class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-600">Display Name</label>
+                    <input id="profile-display-name" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label for="profile-handle" class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-600">Handle</label>
+                    <input id="profile-handle" maxlength="16" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+                    <p class="mt-1 text-[11px] text-slate-500">Handle is fixed after account creation.</p>
+                  </div>
+                  <div>
+                    <input id="profile-avatar" type="hidden" />
+                    <div class="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
+                      <p class="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-600">Avatar Picker</p>
+                      <div class="mb-2">
+                        <img id="profile-avatar-preview" src="" alt="Avatar preview" class="h-14 w-14 rounded-full border border-slate-200 object-cover object-center" />
+                      </div>
+                      <div id="profile-avatar-picker" class="grid grid-cols-6 gap-2"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="profile-bio" class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-600">Bio</label>
+                    <textarea id="profile-bio" rows="3" maxlength="160" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"></textarea>
+                  </div>
+                  <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                    <label for="profile-private-toggle" class="flex items-center justify-between gap-3">
+                      <div>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-slate-700">Private Account</p>
+                        <p class="text-[11px] text-slate-500">If off, follows are accepted instantly and your posts appear in Everyone feed.</p>
+                      </div>
+                      <input id="profile-private-toggle" type="checkbox" class="h-4 w-4 rounded border-slate-300" />
+                    </label>
+                  </div>
+                  <button id="profile-save-btn" type="submit" class="w-full rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-white hover:bg-amber-700">Save Profile</button>
+                </form>
+
+                <section id="profile-posts-section">
+                  <h4 class="mt-5 text-xs font-semibold uppercase tracking-wide text-slate-600">Profile Posts</h4>
+                  <div id="profile-posts" class="mt-3 space-y-3"></div>
+                </section>
+              </div>
+
+              <aside class="space-y-3">
+                <section class="rounded-lg border border-slate-200 bg-white/70 p-3">
+                  <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-600">Suggested Followers</h4>
+                  <div id="profile-suggested-users-side" class="mt-2 space-y-2"></div>
+                </section>
+              </aside>
+            </div>
+          </section>
+
+          <section id="settings-view" class="glass-card mx-auto hidden w-full max-w-6xl p-6">
+            <h3 class="text-sm font-semibold text-slate-700">Settings</h3>
+            <div class="mt-3 space-y-4">
+              <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-600">Appearances</h4>
+              <article class="rounded-lg border border-slate-200 bg-white/70 p-3">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800">Mode Toggle</p>
+                    <p class="text-xs text-slate-500">Switch between light and dark mode.</p>
+                  </div>
+                  <label class="inline-flex cursor-pointer items-center">
+                    <input id="settings-theme-toggle" type="checkbox" class="peer sr-only" />
+                    <span class="relative h-6 w-11 rounded-full bg-slate-300 transition-colors peer-checked:bg-brand after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-5"></span>
+                  </label>
+                </div>
+              </article>
+
+              <article class="rounded-lg border border-slate-200 bg-white/70 p-3">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800">Font Changer</p>
+                    <p class="mt-1 text-xs text-slate-500">Pick one of 5 fonts for the app UI.</p>
+                  </div>
+                  <button id="settings-font-toggle-btn" class="rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100">Change Font</button>
+                </div>
+                <div id="settings-font-panel" class="mt-3 hidden space-y-2">
+                  <label class="flex items-center gap-2 text-sm text-slate-700"><input type="radio" name="settings-font" value="poppins" /><span>Poppins</span></label>
+                  <label class="flex items-center gap-2 text-sm text-slate-700"><input type="radio" name="settings-font" value="georgia" /><span>Georgia</span></label>
+                  <label class="flex items-center gap-2 text-sm text-slate-700"><input type="radio" name="settings-font" value="trebuchet" /><span>Trebuchet MS</span></label>
+                  <label class="flex items-center gap-2 text-sm text-slate-700"><input type="radio" name="settings-font" value="verdana" /><span>Verdana</span></label>
+                  <label class="flex items-center gap-2 text-sm text-slate-700"><input type="radio" name="settings-font" value="times" /><span>Times New Roman</span></label>
+                </div>
+              </article>
+
+              <article class="rounded-lg border border-slate-200 bg-white/70 p-3">
+                <p class="text-sm font-semibold text-slate-800">GUI Size</p>
+                <p class="mt-1 text-xs text-slate-500">Scale UI and font size.</p>
+                <select id="settings-ui-scale" class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700">
+                  <option value="100">100% (Default)</option>
+                  <option value="125">125%</option>
+                  <option value="150">150%</option>
+                </select>
+              </article>
+
+              <article id="settings-nav-icons-setting" class="rounded-lg border border-slate-200 bg-white/70 p-3">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800">Navigation Icons</p>
+                    <p class="text-xs text-slate-500">Show icon-only tabs in top navigation.</p>
+                  </div>
+                  <label class="inline-flex cursor-pointer items-center">
+                    <input id="settings-nav-icons-toggle" type="checkbox" class="peer sr-only" />
+                    <span class="relative h-6 w-11 rounded-full bg-slate-300 transition-colors peer-checked:bg-brand after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-5"></span>
+                  </label>
+                </div>
+              </article>
+
+              <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-600">Notifications</h4>
+              <article class="rounded-lg border border-slate-200 bg-white/70 p-3">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800">Notification Toggle</p>
+                    <p class="text-xs text-slate-500">Enable or disable in-app notifications.</p>
+                  </div>
+                  <label class="inline-flex cursor-pointer items-center">
+                    <input id="settings-notifications-toggle" type="checkbox" class="peer sr-only" />
+                    <span class="relative h-6 w-11 rounded-full bg-slate-300 transition-colors peer-checked:bg-brand after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-5"></span>
+                  </label>
+                </div>
+              </article>
+              <article id="settings-notification-preferences" class="hidden rounded-lg border border-slate-200 bg-white/70 p-3">
+                <p class="text-sm font-semibold text-slate-800">Notification Preferences</p>
+                <p class="mt-1 text-xs text-slate-500">Choose which notification types you want to receive.</p>
+                <select id="settings-notification-type" class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700">
+                  <option value="all">All Notifications</option>
+                  <option value="messages">Message Notifications</option>
+                  <option value="followers">Followers Notifications</option>
+                </select>
+              </article>
+
+              <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-600">Session</h4>
+              <article class="rounded-lg border border-slate-200 bg-white/70 p-3">
+                <p class="text-sm font-semibold text-slate-800">Session</p>
+                <p class="mt-1 text-xs text-slate-500">Sign out from your account.</p>
+                <button id="settings-logout-btn"
+                  class="mt-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+                  Logout
+                </button>
+              </article>
+            </div>
+          </section>
+        </div>
+
+        <aside id="app-sidebar" class="space-y-5 hidden">
+          <section class="glass-card p-4">
+            <h3 class="text-sm font-semibold text-slate-700">Network</h3>
+            <h4 class="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-600">Active Following</h4>
+            <div id="sidebar-active-following" class="mt-2 space-y-2"></div>
+            <h4 class="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-600">Incoming Follow Requests</h4>
+            <div id="sidebar-incoming-requests" class="mt-3 space-y-2"></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script src="./src/js/config.js"></script>
+  <script type="module" src="./src/js/app.js"></script>
+</body>
+
+</html>
